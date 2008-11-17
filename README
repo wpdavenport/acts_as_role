@@ -12,6 +12,7 @@ Example
 =======
 
 has_access?(users_path)
-
+ or 
+has_access?(:controller => 'users', :action => 'index')
 
 Copyright (c) 2008 [Bill Davenport and Jon Morton], released under the MIT license
