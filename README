@@ -1,12 +1,10 @@
 ActsAsRole
 ==========
 
-Roles based permissions. The created permissions are based on the convention of routing resources.  You can have fine
- grained control on specific methods.  Also, multiple roles given to one person.  
+Routing Authentication. The created permissions are based on the convention of routing resources. It offers fine grained controller over controller and action within a Ruby on Rails applilcation.  The currrent plugin is Roles based with a permissions model.  You can have control on specific methods within each controller.  Also, multiple roles given to one person.  
 
 One other nice feature is the ability to modify the view.  While I don't like adding a bunch of logic to my views, 
 this is pretty clean.
-
 
 
 Example
