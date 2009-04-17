@@ -1,11 +1,14 @@
-ActsAsRole
+ActsAsRole (aka Authenticated Routing)
 ==========
 
-Routing Authentication. The created permissions are based on the convention of routing resources. It offers fine grained controller over controller and action within a Ruby on Rails applilcation.  The currrent plugin is Roles based with a permissions model.  You can have control on specific methods within each controller.  Also, multiple roles given to one person.  
+Requirements:
+ Rails 2.x (I'm sure that earlier versions will work), RESTful Authentication
 
-One other nice feature is the ability to modify the view.  While I don't like adding a bunch of logic to my views, 
-this is pretty clean.
+Have you ever wanted to not give delete access to a user but allow them to update.  Or dynamically build the access permssions to features?  
 
+Authenticated Routing protects controller actions using the convention of routing resources. It offers fine grained control over controller class name and action within a Ruby on Rails applilcation.  The currrent plugin is Roles based with a permissions model.   Also, multiple roles given to one person.  Currently, the only way to create and associate permissions, roles and users is through the console.  One other nice feature is the ability to conditionally enable links in the view.  
+
+Since this grew out of the needs of a production based product the setup is more envolved than I like. It's the first thing on thte chopping block.
 
 Example
 =======
@@ -14,4 +17,68 @@ has_access?(users_path)
  or 
 has_access?(:controller => 'users', :action => 'index')
 
-Copyright (c) 2008 [Bill Davenport and Jon Morton], released under the MIT license
+
+
+What is missing
+=======
+ GUI tools: Relate a user to a role, Relate a permissin to a role, Adding Permissions
+
+
+INSTALLATION: (this is involved)
+=======
+  1. Install the plugin: script/plugin install git://github.com/wpdavenport/acts_as_role.git
+  2. Add the following code to the top of the application controller:
+     	include ActsAsRole
+  3. Add the following code to the top of the application helper:
+     	include ActsAsRole
+  4. Create these tables:
+		script/generate model access permission_id:integer role_id:integer
+		script/generate model right user_id:integer role_id:integer
+		script/generate model role name:string enabled:boolean 		# default => true
+		script/generate model permission controller:string action:string
+  5. Finally we need to add the relationships to the models:
+		Access model
+		 belongs_to :permission
+		 belongs_to :role
+
+		Rights model
+		 belongs_to :user
+		 belongs_to :role
+		 validates_uniqueness_of :role_id, :scope => :user_id
+
+		Role model
+		 has_many :accesses, :dependent => :destroy
+		 has_many :permissions, :through => :accesses
+		 has_many :rights, :dependent => :destroy
+		 has_many :users, :through => :rights
+
+		User model
+		 has_many :responsibilities, :dependent => :destroy
+		 has_many :roles, :through => :rights
+
+		Permission model
+		 has_many :accesses, :dependent => :destroy
+		 has_many :roles, :through => :accesses
+		 validates_uniqueness_of :action, :scope => :controller
+
+Once the plugin is set up
+=======
+	- create a role
+	   role = Role.create(:name => "Admin")
+	- create a permission
+	   permission = Permission.create(:controller => 'users', :action => 'index')
+	- Relate a user to a role
+	   user = User.find(1)
+	   user.roles << role
+	- Relate a permissin to a role
+	   role.permissions << permission
+			
+
+TODO
+=======
+ • Find a way to simplify permission management
+ • Add admin pages to manage roles and permisions
+
+
+
+Copyright (c) 2008-2009 [Bill Davenport and Jon Morton], released under the MIT license
