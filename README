@@ -53,7 +53,7 @@ INSTALLATION: (this is involved)
 		 has_many :users, :through => :rights
 
 		User model
-		 has_many :responsibilities, :dependent => :destroy
+		 has_many :rights, :dependent => :destroy
 		 has_many :roles, :through => :rights
 
 		Permission model
